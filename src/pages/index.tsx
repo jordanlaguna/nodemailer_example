@@ -1,5 +1,6 @@
 import { Inter } from "next/font/google";
-import { ChangeEvent, SetStateAction, useState } from "react";
+import { ChangeEvent, useState } from "react";
+import { IoLogoWhatsapp } from "react-icons/io";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -9,7 +10,6 @@ export default function Home() {
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
   };
-
   const handleSendEmail = async () => {
     try {
       const response = await fetch("/api/sendEmail", {
@@ -34,7 +34,7 @@ export default function Home() {
     <main>
       <div>
         <input
-          className="w-48 h-8 items-center ml-60 mt-44"
+          className="w-48 h-8 items-center ml-96 mt-44"
           type="text"
           placeholder="Digite el correo"
           value={email}
@@ -46,6 +46,7 @@ export default function Home() {
         >
           Enviar correo
         </button>
+        <IoLogoWhatsapp className="w-10 h-10 ml-56" />
       </div>
     </main>
   );

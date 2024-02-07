@@ -1,5 +1,4 @@
 import sendMail from "@/pages/api/nodemailer";
-
 export default async function handler(
   req: { body: { email: any } },
   res: {
@@ -11,12 +10,9 @@ export default async function handler(
   }
 ) {
   const { email } = req.body;
-
   console.log("Correo recibido en el endpoint:", email);
-
   try {
     const success = await sendMail(email);
-
     if (success) {
       res.status(200).json({ success: true });
     } else {
