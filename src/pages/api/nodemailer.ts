@@ -6,20 +6,40 @@ const transporter = nodemailer.createTransport({
   secure: true,
   auth: {
     user: "jordanlaguna10@gmail.com",
-    pass: "wcka awqr eyen pypf",
+    pass: "",
   },
 });
 
-async function sendMail(toEmail: string) {
+async function sendMail(
+  toEmail: string,
+  pdfBuffer: Buffer,
+  pdfFilename: string
+) {
   try {
+    // Adjuntar el PDF al correo electrónico
     const info = await transporter.sendMail({
-      from: '"Mi primer correo enviado 👻" <jordanlaguna10@gmail.com>',
+      from: '"Mudança Gym" <jordanlaguna10@gmail.com>',
       to: toEmail,
-      subject: "Departamento de recursos humanos",
+      subject: "Políticas del Gimnasio",
       text: "Enviado con éxito!",
-      html: "<b>Esta prueba se ha realizado con éxito.</b>",
+      html: `
+        <p>
+          ¡Hola!<br><br>
+          Esperamos que te encuentre bien!, ha sido un éxito amiga<br><br>
+          Atentamente,<br>
+          El Equipo de Mudança Gym.
+        </p>
+      `,
+      attachments: [
+        {
+          filename: pdfFilename,
+          content: pdfBuffer,
+        },
+      ],
     });
+
     console.log("Message sent: %s", info.messageId);
+
     return true;
   } catch (error) {
     console.error("Error al enviar el correo:", error);

@@ -1,23 +1,35 @@
-import { Inter } from "next/font/google";
 import { ChangeEvent, useState } from "react";
-import { IoLogoWhatsapp } from "react-icons/io";
-
-const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
   const [email, setEmail] = useState("");
+  const [pdf, setPdf] = useState<File | null>(null);
+  const [error, setError] = useState("");
 
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
   };
+
+  const handlePdfChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setPdf(e.target.files[0]);
+    }
+  };
+
   const handleSendEmail = async () => {
+    if (!pdf) {
+      setError("Por favor selecciona un archivo PDF");
+      return;
+    }
+
     try {
+      setError("");
+      const formData = new FormData();
+      formData.append("email", email);
+      formData.append("pdf", pdf);
+
       const response = await fetch("/api/sendEmail", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
+        body: formData,
       });
 
       if (response.ok) {
@@ -27,6 +39,7 @@ export default function Home() {
       }
     } catch (error) {
       console.error("Error inesperado", error);
+      setError("Ocurrió un error al enviar el correo");
     }
   };
 
@@ -34,19 +47,19 @@ export default function Home() {
     <main>
       <div>
         <input
-          className="w-48 h-8 items-center ml-96 mt-44"
           type="text"
           placeholder="Digite el correo"
           value={email}
           onChange={(e) => handleEmailChange(e)}
         />
+        <input type="file" accept=".pdf" onChange={handlePdfChange} />
         <button
-          className="bg-lime-900 py-1 ml-1 rounded-md w-28 h-8"
+          className=" border-r-2 w-30 h-30 bg-green-600"
           onClick={handleSendEmail}
         >
           Enviar correo
         </button>
-        <IoLogoWhatsapp className="w-10 h-10 ml-56" />
+        {error && <p style={{ color: "red" }}>{error}</p>}
       </div>
     </main>
   );
