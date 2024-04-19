@@ -4,23 +4,13 @@ import autoTable from "jspdf-autotable";
 
 export default function Home() {
   const [email, setEmail] = useState("");
+  const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
+  const [pdfName, setPdfName] = useState("");
   const [error, setError] = useState("");
 
   const tableData = [
-    [
-      "Jordan Laguna",
-      "Laguna Rodríguez",
-      "2021-10-10",
-      "jlagu@gmail.com",
-      "jlaguna",
-    ],
-    [
-      "Jordan Laguna",
-      "Laguna Rodríguez",
-      "2021-10-10",
-      "jlagu@gmail.com",
-      "jlaguna",
-    ],
+    ["Jordan ", "Laguna Rodríguez", "2021-10-10", "jlagu@gmail.com", "jlaguna"],
+    ["Jordan ", "Laguna Rodríguez", "2021-10-10", "jlagu@gmail.com", "jlaguna"],
     [
       "Jordan Laguna",
       "Laguna Rodríguez",
@@ -47,11 +37,15 @@ export default function Home() {
     try {
       setError("");
 
-      const pdfBlob = await generatePDF();
+      // Verificar si pdfBlob es nulo antes de usarlo
+      if (!pdfBlob) {
+        setError("No se ha cargado ningún archivo PDF");
+        return;
+      }
 
       const formData = new FormData();
       formData.append("email", email);
-      formData.append("pdf", pdfBlob, "ReporteTabla.pdf");
+      formData.append("pdf", pdfBlob, "ReporteUsuarios.pdf");
 
       const response = await fetch("/api/sendEmail", {
         method: "POST",
@@ -87,42 +81,67 @@ export default function Home() {
       startY: 70,
     });
 
+    // Devolver el blob del PDF directamente
     return doc.output("blob");
   };
 
   const handleDownloadPDF = async () => {
     try {
       const pdfBlob = await generatePDF();
-      const url = window.URL.createObjectURL(new Blob([pdfBlob]));
+      setPdfBlob(pdfBlob); // Almacenar el blob del PDF en el estado
+
+      const pdfName = "ReporteUsuarios.pdf"; // Nombre del PDF
+      setPdfName(pdfName); // Almacenar el nombre del PDF en el estado
+
+      const url = window.URL.createObjectURL(pdfBlob);
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", "ReporteTabla.pdf");
+      link.setAttribute("download", pdfName);
       document.body.appendChild(link);
       link.click();
+
+      // Cargar automáticamente el PDF en el input file
+      inputFileRef.current?.click();
     } catch (error) {
       console.error("Error al descargar el PDF", error);
     }
   };
 
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setPdfBlob(file);
+      setPdfName(file.name);
+    }
+  };
+
   return (
     <>
-      <main>
-        <div>
-          <input
-            type="text"
-            placeholder="Digite el correo"
-            value={email}
-            onChange={(e) => handleEmailChange(e)}
-          />
-          <input type="file"></input>
-          <button
-            className="border-r-2 w-30 h-30 bg-green-600"
-            onClick={handleSendEmail}
-          >
-            Enviar correo
-          </button>
-          {error && <p style={{ color: "red" }}>{error}</p>}
-        </div>
+      <main
+        style={{ display: "flex", flexDirection: "row", alignItems: "center" }}
+      >
+        <input
+          type="text"
+          placeholder="Digite el correo"
+          value={email}
+          onChange={(e) => handleEmailChange(e)}
+        />
+        <input
+          type="file"
+          accept=".pdf"
+          onChange={handleFileChange}
+          ref={inputFileRef}
+          style={{ display: "none" }}
+        />
+        <div style={{ marginLeft: "10px" }}>{pdfName}</div>{" "}
+        <button
+          className="border-r-2 w-30 h-30 bg-green-600"
+          onClick={handleSendEmail}
+          disabled={!pdfBlob}
+        >
+          Enviar correo
+        </button>
+        {error && <p style={{ color: "red" }}>{error}</p>}
       </main>
       <section className="ml-36">
         <table className="mt-5 w-[80%] bg-slate-400 rounded-lg">
