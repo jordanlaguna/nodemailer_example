@@ -1,6 +1,7 @@
 import { ChangeEvent, useRef, useState } from "react";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
+import BigCalendar from "@/components/BigCalendar";
 
 export default function Home() {
   const [email, setEmail] = useState("");
@@ -11,20 +12,7 @@ export default function Home() {
   const tableData = [
     ["Jordan ", "Laguna Rodríguez", "2021-10-10", "jlagu@gmail.com", "jlaguna"],
     ["Jordan ", "Laguna Rodríguez", "2021-10-10", "jlagu@gmail.com", "jlaguna"],
-    [
-      "Jordan Laguna",
-      "Laguna Rodríguez",
-      "2021-10-10",
-      "jlagu@gmail.com",
-      "jlaguna",
-    ],
-    [
-      "Jordan Laguna",
-      "Laguna Rodríguez",
-      "2021-10-10",
-      "jlagu@gmail.com",
-      "jlaguna",
-    ],
+    ["Jordan", "Laguna Rodríguez", "2021-10-10", "jlagu@gmail.com", "jlaguna"],
   ];
 
   const inputFileRef = useRef<HTMLInputElement>(null);
@@ -171,6 +159,9 @@ export default function Home() {
           Descargar PDF
         </button>
       </section>
+      <article>
+        <BigCalendar />
+      </article>
     </>
   );
 }
