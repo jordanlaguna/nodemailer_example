@@ -9,7 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
     "@heroicons/react": "^1.0.6",
+    "@mui/icons-material": "^5.15.19",
+    "@mui/material": "^5.15.19",
     "@nextui-org/react": "^2.3.6",
     "@nextui-org/table": "^2.0.33",
     "@react-stately/data": "^3.11.3",
